@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Oggetto Web extension for Magento
+ * 
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * 
+ * DISCLAIMER
+ * 
+ * Do not edit or add to this file if you wish to upgrade
+ * the Oggetto News module to newer versions in the future.
+ * If you wish to customize the Oggetto News module for your needs
+ * please refer to http://www.magentocommerce.com for more information.
+ * 
+ * @category  Oggetto
+ * @package   Oggetto_News
+ * @copyright Copyright (C) 2014, Oggetto Web (http://oggettoweb.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+--> 
+<layout>
+    <adminhtml_news_news_index>
+        <reference name="menu">
+            <action method="setActive">
+                <menupath>catalog/oggetto_news/news</menupath>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="oggetto_news/adminhtml_news" name="news" />
+
+        </reference>
+    </adminhtml_news_news_index>
+    <adminhtml_news_news_grid>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="oggetto_news/adminhtml_news_grid" name="news_grid"/>
+        </block>
+    </adminhtml_news_news_grid>
+    <!-- News add/edit action -->
+    <adminhtml_news_news_edit>
+        <update handle="editor"/>
+        <reference name="menu">
+            <action method="setActive">
+                <menupath>catalog/oggetto_news/news</menupath>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="oggetto_news/adminhtml_news_edit" name="news_edit"></block>
+        </reference>
+        <reference name="left">
+            <block type="oggetto_news/adminhtml_news_edit_tabs" name="news_tabs"></block>
+        </reference>
+    </adminhtml_news_news_edit>
+
+    <adminhtml_news_category_edit>
+        <update handle="editor"/>
+        <reference name="left">
+            <block name="category.tree" type="oggetto_news/adminhtml_category_tree" />
+        </reference>
+        <reference name="content">
+            <block name="category.edit" type="oggetto_news/adminhtml_category_edit" template="oggetto_news/category/edit.phtml" />
+        </reference>
+        <reference name="js">
+            <block type="core/template" template="catalog/wysiwyg/js.phtml" name="catalog.wysiwyg.js" />
+        </reference>
+    </adminhtml_news_category_edit>
+    <adminhtml_news_news_categories>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="oggetto_news/adminhtml_news_edit_tab_category" name="news.edit.tab.category"/>
+        </block>
+    </adminhtml_news_news_categories>
+</layout>
