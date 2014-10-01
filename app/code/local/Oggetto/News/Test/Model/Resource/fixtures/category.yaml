@@ -1,0 +1,32 @@
+tables:
+  oggetto_news/category:
+    - entity_id: 1
+      children_count: 4
+      path: 1
+      level: 0
+      status: 1
+
+    - entity_id: 2
+      parent_id: 1
+      path: 1/2
+      level: 1
+      status: 1
+      url_path: lol
+
+    - entity_id: 3
+      parent_id: 2
+      path: 1/2/3
+      level: 2
+      status: 1
+
+    - entity_id: 4
+      parent_id: 2
+      path: 1/2/4
+      level: 2
+      status: 1
+
+    - entity_id: 5
+      parent_id: 3
+      path: 1/2/3/5
+      level: 3
+      status: 1

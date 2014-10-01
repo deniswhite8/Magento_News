@@ -43,7 +43,7 @@
             <action method="addItem" ifconfig="oggetto_news/category/tree"><type>skin_js</type><js>js/oggetto_news/tree.js</js></action>
         </reference>
         <reference name="content">
-            <block type="oggetto_news/category_list" name="category_list" template="oggetto_news/category/list.phtml" />
+            <block type="oggetto_news/category_list" name="category_list" template="oggetto_news/category/list.phtml"/>
         </reference>
     </oggetto_news_category_index>
     <oggetto_news_news_view translate="label" module="oggetto_news">

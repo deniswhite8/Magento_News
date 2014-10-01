@@ -43,7 +43,7 @@ class Oggetto_News_NewsController
         $this->_initLayoutMessages('catalog/session');
         $this->_initLayoutMessages('customer/session');
         $this->_initLayoutMessages('checkout/session');
-        if (Mage::helper('oggetto_news/news')->getUseBreadcrumbs()) {
+        if (Mage::helper('oggetto_news/data')->useBreadcrumbsForNews()) {
             if ($breadcrumbBlock = $this->getLayout()->getBlock('breadcrumbs')) {
                 $breadcrumbBlock->addCrumb('home', array(
                         'label' => Mage::helper('oggetto_news')->__('Home'),
@@ -67,15 +67,15 @@ class Oggetto_News_NewsController
      */
     protected function _initNews()
     {
-        $newsId = $this->getRequest()->getParam('id', 0);
+        $newsId = $this->getRequest()->getParam('id');
         $news = Mage::getModel('oggetto_news/news')
-            ->setStoreId(Mage::app()->getStore()->getId())
+//            ->setStoreId(Mage::app()->getStore()->getId())
             ->load($newsId);
-        if (!$news->getId()) {
-            return false;
-        } elseif (!$news->getStatus()) {
+
+        if (!$news->getId() || !$news->getStatus()) {
             return false;
         }
+
         return $news;
     }
 
@@ -99,16 +99,16 @@ class Oggetto_News_NewsController
         if ($root = $this->getLayout()->getBlock('root')) {
             $root->addBodyClass('news-news news-news' . $news->getId());
         }
-        if (Mage::helper('oggetto_news/news')->getUseBreadcrumbs()) {
+        if (Mage::helper('oggetto_news/data')->useBreadcrumbsForNews()) {
             if ($breadcrumbBlock = $this->getLayout()->getBlock('breadcrumbs')) {
                 $breadcrumbBlock->addCrumb('home', array(
-                        'label' => Mage::helper('oggetto_news')->__('Home'),
+                        'label' => Mage::helper('oggetto_news/data')->__('Home'),
                         'link' => Mage::getUrl(),
                     )
                 );
                 $breadcrumbBlock->addCrumb('newss', array(
                         'label' => Mage::helper('oggetto_news')->__('News'),
-                        'link' => Mage::helper('oggetto_news/news')->getNewsUrl(),
+                        'link' => Mage::helper('oggetto_news/data')->getNewsUrl(),
                     )
                 );
                 $breadcrumbBlock->addCrumb('news', array(

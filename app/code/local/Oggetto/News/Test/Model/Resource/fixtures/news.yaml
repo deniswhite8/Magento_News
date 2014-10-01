@@ -1,0 +1,13 @@
+tables:
+  oggetto_news/news:
+    - entity_id: 1
+      url_key: lol
+      url_path: qwe/lol
+
+    - entity_id: 2
+      url_key: ololo
+      url_path: qwe/ololo
+
+    - entity_id: 3
+      url_key: trololololo
+      url_path: qwe/trololololo

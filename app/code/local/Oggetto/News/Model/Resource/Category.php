@@ -29,7 +29,7 @@
  * @package     Oggetto_News
  */
 class Oggetto_News_Model_Resource_Category
-    extends Mage_Core_Model_Resource_Db_Abstract
+    extends Oggetto_News_Model_Resource_Entity
 {
 
     /**
@@ -224,60 +224,6 @@ class Oggetto_News_Model_Resource_Category
     }
 
     /**
-     * Check if news category id exist
-     *
-     * @param int $entityId Entity Id
-     * @return bool
-     */
-    public function checkId($entityId)
-    {
-        $select = $this->_getReadAdapter()->select()
-            ->from($this->getMainTable(), 'entity_id')
-            ->where('entity_id = :entity_id');
-        $bind = array('entity_id' => $entityId);
-        return $this->_getReadAdapter()->fetchOne($select, $bind);
-    }
-
-    /**
-     * Check array of news categories identifiers
-     *
-     * @param array $ids Ids
-     * @return array
-     */
-    public function verifyIds(array $ids)
-    {
-        if (empty($ids)) {
-            return array();
-        }
-        $select = $this->_getReadAdapter()->select()
-            ->from($this->getMainTable(), 'entity_id')
-            ->where('entity_id IN(?)', $ids);
-
-        return $this->_getReadAdapter()->fetchCol($select);
-    }
-
-    /**
-     * Get count of active/not active children news categories
-     *
-     * @param Oggetto_News_Model_Category $category Category
-     * @param bool $isActiveFlag Is active flag
-     *
-     * @return int
-     */
-    public function getChildrenAmount($category, $isActiveFlag = true)
-    {
-        $bind = array(
-            'active_flag' => $isActiveFlag,
-            'c_path' => $category->getPath() . '/%'
-        );
-        $select = $this->_getReadAdapter()->select()
-            ->from(array('m' => $this->getMainTable()), array('COUNT(m.entity_id)'))
-            ->where('m.path LIKE :c_path')
-            ->where('status' . ' = :active_flag');
-        return $this->_getReadAdapter()->fetchOne($select, $bind);
-    }
-
-    /**
      * Return parent news categories of news category
      *
      * @param Oggetto_News_Model_Category $category Category
@@ -331,6 +277,23 @@ class Oggetto_News_Model_Resource_Category
             $bind['c_level'] = $category->getLevel() + 1;
         }
         return $this->_getReadAdapter()->fetchCol($select, $bind);
+    }
+
+    /**
+     * Get child sub tree
+     *
+     * @param Oggetto_News_Model_Category $category Category
+     * @return Oggetto_News_Model_Resource_Category_Collection
+     */
+    public function getChildSubTree($category)
+    {
+        $collection = $category->getCollection();
+        $collection
+            ->addFieldToFilter('path', array('like' => $category->getPath() . '/%'))
+            ->setOrder(new Zend_Db_Expr("CONCAT(path, '-', position)"), Varien_Db_Select::SQL_ASC)
+            ->load();
+
+        return $collection;
     }
 
     /**
@@ -441,22 +404,7 @@ class Oggetto_News_Model_Resource_Category
      */
     public function isForbiddenToDelete($categoryId)
     {
-        return ($categoryId == Mage::helper('oggetto_news/category')->getRootCategoryId());
-    }
-
-    /**
-     * Get news category path value by its id
-     *
-     * @param int $categoryId
-     * @return string
-     */
-    public function getCategoryPathById($categoryId)
-    {
-        $select = $this->getReadConnection()->select()
-            ->from($this->getMainTable(), array('path'))
-            ->where('entity_id = :entity_id');
-        $bind = array('entity_id' => (int)$categoryId);
-        return $this->getReadConnection()->fetchOne($select, $bind);
+        return ($categoryId == Mage::helper('oggetto_news/data')->getRootCategoryId());
     }
 
     /**
@@ -475,6 +423,7 @@ class Oggetto_News_Model_Resource_Category
         $adapter = $this->_getWriteAdapter();
         $levelFiled = $adapter->quoteIdentifier('level');
         $pathField = $adapter->quoteIdentifier('path');
+        $urlPathField = $adapter->quoteIdentifier('url_path');
 
         /**
          * Decrease children count for all old news category parent news categories
@@ -499,6 +448,12 @@ class Oggetto_News_Model_Resource_Category
         $newLevel = $newParent->getLevel() + 1;
         $levelDisposition = $newLevel - $category->getLevel();
 
+        if ($newParent->getUrlPath()) {
+            $newUrlPath = sprintf('%s/%s', $newParent->getUrlPath(), $category->getUrlKey());
+        } else {
+            $newUrlPath = $category->getUrlKey();
+        }
+
         /**
          * Update children nodes path
          */
@@ -508,10 +463,14 @@ class Oggetto_News_Model_Resource_Category
                 'path' => new Zend_Db_Expr('REPLACE(' . $pathField . ',' .
                         $adapter->quote($category->getPath() . '/') . ', ' . $adapter->quote($newPath . '/') . ')'
                     ),
+                'url_path' => new Zend_Db_Expr('REPLACE(' . $urlPathField . ',' .
+                    $adapter->quote($category->getUrlPath() . '/') . ', ' . $adapter->quote($newUrlPath . '/') . ')'
+                ),
                 'level' => new Zend_Db_Expr($levelFiled . ' + ' . $levelDisposition)
             ),
             array($pathField . ' LIKE ?' => $category->getPath() . '/%')
         );
+
         /**
          * Update moved news category data
          */
@@ -589,100 +548,32 @@ class Oggetto_News_Model_Resource_Category
     }
 
     /**
-     * Check url key
+     * Init the url path select
      *
      * @param string $urlPath Url path
-     * @param int $storeId Store id
-     * @param bool $active Active
-     *
-     * @return mixed
-     */
-    public function checkUrlPath($urlPath, $storeId, $active = true)
-    {
-        $stores = array(Mage_Core_Model_App::ADMIN_STORE_ID, $storeId);
-        $select = $this->_initCheckUrlPathSelect($urlPath, $stores);
-        if ($active) {
-            $select->where('e.status = ?', $active);
-        }
-        $select->reset(Zend_Db_Select::COLUMNS)
-            ->columns('e.entity_id')
-            ->limit(1);
-
-        return $this->_getReadAdapter()->fetchOne($select);
-    }
-
-    /**
-     * Check for unique URL key
-     *
-     * @param Mage_Core_Model_Abstract $object Object
-     * @return bool
-     */
-    public function getIsUniqueUrlKey(Mage_Core_Model_Abstract $object)
-    {
-        if (Mage::app()->isSingleStoreMode() || !$object->hasStores()) {
-            $stores = array(Mage_Core_Model_App::ADMIN_STORE_ID);
-        } else {
-            $stores = (array)$object->getData('stores');
-        }
-        $select = $this->_initCheckUrlKeySelect($object->getData('url_key'), $stores);
-        if ($object->getId()) {
-            $select->where('e.entity_id <> ?', $object->getId());
-        }
-        if ($this->_getWriteAdapter()->fetchRow($select)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Check if the URL key is numeric
-     *
-     * @param Mage_Core_Model_Abstract $object Object
-     * @return bool
-     */
-    protected function isNumericUrlKey(Mage_Core_Model_Abstract $object)
-    {
-        return preg_match('/^[0-9]+$/', $object->getData('url_key'));
-    }
-
-    /**
-     * Check if the URL key is valid
-     *
-     * @param Mage_Core_Model_Abstract $object Object
-     * @return bool
-     */
-    protected function isValidUrlKey(Mage_Core_Model_Abstract $object)
-    {
-        return preg_match('/^[a-z0-9][a-z0-9_\/-]+(\.[a-z0-9_-]+)?$/', $object->getData('url_key'));
-    }
-
-    /**
-     * Format string as url key
-     *
-     * @param string $str Url
-     * @return string
-     */
-    public function formatUrlKey($str)
-    {
-        $urlKey = preg_replace('#[^0-9a-z]+#i', '-', Mage::helper('catalog/product_url')->format($str));
-        $urlKey = strtolower($urlKey);
-        $urlKey = trim($urlKey, '-');
-        return $urlKey;
-    }
-
-    /**
-     * Init the check select
-     *
-     * @param string $urlPath Url path
-     * @param array $store Store
-     *
      * @return Zend_Db_Select
      */
-    protected function _initCheckUrlPathSelect($urlPath, $store)
+    protected function _initUrlPathSelect($urlPath)
     {
         $select = $this->_getReadAdapter()->select()
             ->from(array('e' => $this->getMainTable()))
             ->where('e.url_path = ?', $urlPath);
         return $select;
+    }
+
+    /**
+     * Get id by url path
+     *
+     * @param string $urlPath Url path
+     * @return mixed
+     */
+    public function getIdByUrlPath($urlPath)
+    {
+        $select = $this->_initUrlPathSelect($urlPath);
+        $select->reset(Zend_Db_Select::COLUMNS)
+            ->columns('e.entity_id')
+            ->limit(1);
+
+        return $this->_getReadAdapter()->fetchOne($select);
     }
 }

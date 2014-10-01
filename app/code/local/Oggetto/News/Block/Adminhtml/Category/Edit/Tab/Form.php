@@ -47,7 +47,7 @@ class Oggetto_News_Block_Adminhtml_Category_Edit_Tab_Form
         if (!$this->getCategory()->getId()) {
             $parentId = $this->getRequest()->getParam('parent');
             if (!$parentId) {
-                $parentId = Mage::helper('oggetto_news/category')->getRootCategoryId();
+                $parentId = Mage::helper('oggetto_news/data')->getRootCategoryId();
             }
             $fieldset->addField('path', 'hidden', array(
                 'name' => 'path',

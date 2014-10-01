@@ -48,9 +48,7 @@
         <?php echo $this->getPagerHtml(); ?>
     <?php else : ?>
         <ul id="categories-list">
-            <?php foreach ($_categories as $_category) : ?>
-                <?php echo $this->drawCategory($_category);?>
-            <?php endforeach;?>
+            <?php echo $this->drawCategory(Mage::getModel('oggetto_news/category')->load(1));?>
         </ul>
         <script type="text/javascript">
             newsTree('categories-list');

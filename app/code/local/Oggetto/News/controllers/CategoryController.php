@@ -40,23 +40,27 @@ class Oggetto_News_CategoryController
     public function indexAction()
     {
         $this->loadLayout();
+
         $this->_initLayoutMessages('catalog/session');
         $this->_initLayoutMessages('customer/session');
         $this->_initLayoutMessages('checkout/session');
-        if (Mage::helper('oggetto_news/category')->getUseBreadcrumbs()) {
-            if ($breadcrumbBlock = $this->getLayout()->getBlock('breadcrumbs')) {
-                $breadcrumbBlock->addCrumb('home', array(
+
+        if (Mage::helper('oggetto_news/data')->useBreadcrumbsForCategory() &&
+            ($breadcrumbBlock = $this->getLayout()->getBlock('breadcrumbs'))) {
+
+            $breadcrumbBlock
+                ->addCrumb('home', array(
                         'label' => Mage::helper('oggetto_news')->__('Home'),
                         'link' => Mage::getUrl(),
                     )
-                );
-                $breadcrumbBlock->addCrumb('categories', array(
+                )
+                ->addCrumb('categories', array(
                         'label' => Mage::helper('oggetto_news')->__('News categories'),
                         'link' => '',
                     )
                 );
-            }
         }
+
         $this->renderLayout();
     }
 
@@ -67,15 +71,14 @@ class Oggetto_News_CategoryController
      */
     protected function _initCategory()
     {
-        $categoryId = $this->getRequest()->getParam('id', 1);
+        $categoryId = $this->getRequest()->getParam('id', Mage::helper('oggetto_news/data')->getRootCategoryId());
         $category = Mage::getModel('oggetto_news/category')
-            ->setStoreId(Mage::app()->getStore()->getId())
             ->load($categoryId);
-        if (!$category->getId()) {
-            return false;
-        } elseif (!$category->getStatus()) {
+
+        if (!$category->getId() || !$category->getStatus()) {
             return false;
         }
+
         return $category;
     }
 
@@ -87,50 +90,56 @@ class Oggetto_News_CategoryController
     public function viewAction()
     {
         $category = $this->_initCategory();
-        if (!$category) {
+
+        if (!$category || !$category->getStatusPath()) {
             $this->_forward('no-route');
             return;
         }
-        if (!$category->getStatusPath()) {
-            $this->_forward('no-route');
-            return;
-        }
+
         Mage::register('current_category', $category);
+
         $this->loadLayout();
         $this->_initLayoutMessages('catalog/session');
         $this->_initLayoutMessages('customer/session');
         $this->_initLayoutMessages('checkout/session');
+
         if ($root = $this->getLayout()->getBlock('root')) {
             $root->addBodyClass('news-category news-category' . $category->getId());
         }
-        if (Mage::helper('oggetto_news/category')->getUseBreadcrumbs()) {
-            if ($breadcrumbBlock = $this->getLayout()->getBlock('breadcrumbs')) {
-                $breadcrumbBlock->addCrumb('home', array(
+
+        if (Mage::helper('oggetto_news/data')->useBreadcrumbsForCategory() &&
+            ($breadcrumbBlock = $this->getLayout()->getBlock('breadcrumbs'))) {
+
+            $breadcrumbBlock
+                ->addCrumb('home', array(
                         'label' => Mage::helper('oggetto_news')->__('Home'),
                         'link' => Mage::getUrl(),
                     )
-                );
-                $breadcrumbBlock->addCrumb('categories', array(
+                )
+                ->addCrumb('categories', array(
                         'label' => Mage::helper('oggetto_news')->__('News categories'),
-                        'link' => Mage::helper('oggetto_news/category')->getCategoriesUrl(),
+                        'link' => Mage::helper('oggetto_news/data')->getCategoriesUrl(),
                     )
-                );
-                $parents = $category->getParentCategories();
-                foreach ($parents as $parent) {
-                    if ($parent->getId() != Mage::helper('oggetto_news/category')->getRootCategoryId() && $parent->getId() != $category->getId()) {
-                        $breadcrumbBlock->addCrumb('category-' . $parent->getId(), array(
-                            'label' => $parent->getName(),
-                            'link' => $link = $parent->getCategoryUrl(),
-                        ));
-                    }
-                }
-                $breadcrumbBlock->addCrumb('category', array(
+                )
+                ->addCrumb('category', array(
                         'label' => $category->getName(),
                         'link' => '',
                     )
                 );
+
+            $parents = $category->getParentCategories();
+            foreach ($parents as $parent) {
+                if ($parent->getId() != Mage::helper('oggetto_news/data')->getRootCategoryId()
+                    && $parent->getId() != $category->getId()) {
+
+                    $breadcrumbBlock->addCrumb('category-' . $parent->getId(), array(
+                        'label' => $parent->getName(),
+                        'link' => $link = $parent->getCategoryUrl(),
+                    ));
+                }
             }
         }
+
         $this->renderLayout();
     }
 }

@@ -1,0 +1,9 @@
+config:
+  stores/default/oggetto_news/news/url_rewrite_list: all_news
+  stores/default/oggetto_news/category/url_rewrite_list: all_categories
+
+  stores/default/oggetto_news/news/url_prefix: news/
+  stores/default/oggetto_news/news/url_suffix: .html
+
+  stores/default/oggetto_news/category/url_prefix: news/
+  stores/default/oggetto_news/category/url_suffix:

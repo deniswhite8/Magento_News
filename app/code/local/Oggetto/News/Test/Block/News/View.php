@@ -23,35 +23,27 @@
  */
 
 /**
- * News helper
+ * News view block test
  *
  * @category    Oggetto
  * @package     Oggetto_News
  */
-class Oggetto_News_Helper_News
-    extends Mage_Core_Helper_Abstract
+class Oggetto_News_Test_Block_News_View
+    extends EcomDev_PHPUnit_Test_Case_Controller
 {
 
     /**
-     * Get the url to the news list page
+     * Test get the current news
      *
-     * @return string
+     * @return Oggetto_News_Model_News|null
      */
-    public function getNewsUrl()
+    public function testGetCurrentNews()
     {
-        if ($listKey = Mage::getStoreConfig('oggetto_news/news/url_rewrite_list')) {
-            return Mage::getUrl('', array('_direct' => $listKey));
-        }
-        return Mage::getUrl('oggetto_news/news/index');
-    }
+        $news = Mage::getModel('oggetto_news/news');
 
-    /**
-     * Check if breadcrumbs can be used
-     *
-     * @return bool
-     */
-    public function getUseBreadcrumbs()
-    {
-        return Mage::getStoreConfigFlag('oggetto_news/news/breadcrumbs');
+        Mage::unregister('current_news');
+        Mage::register('current_news', $news);
+
+        $this->assertEquals($news, (new Oggetto_News_Block_News_View())->getCurrentNews());
     }
 }

@@ -1,0 +1,61 @@
+tables:
+  oggetto_news/category:
+    - entity_id: 1
+      name: ROOT
+      url_key: null
+      parent_id: 0
+      path: '1'
+      url_path: null
+      level: 0
+      children_count: 5
+      status: 0
+
+    - entity_id: 2
+      name: q
+      url_key: q
+      parent_id: 1
+      path: 1/2
+      url_path: q
+      level: 1
+      children_count: 4
+      status: 1
+
+    - entity_id: 3
+      name: w
+      url_key: w
+      parent_id: 2
+      path: 1/2/3
+      url_path: q/w
+      level: 2
+      children_count: 3
+      status: 1
+
+    - entity_id: 4
+      name: e
+      url_key: e
+      parent_id: 3
+      path: 1/2/3/4
+      url_path: q/w/e
+      level: 3
+      children_count: 2
+      status: 1
+
+    - entity_id: 5
+      name: r
+      url_key: r
+      parent_id: 4
+      path: 1/2/3/4/5
+      url_path: q/w/e/r
+      level: 4
+      children_count: 0
+      status: 1
+
+    - entity_id: 6
+      name: t
+      url_key: t
+      parent_id: 4
+      path: 1/2/3/4/6
+      url_path: q/w/e/t
+      level: 4
+      children_count: 0
+      status: 1

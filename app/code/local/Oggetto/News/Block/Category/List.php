@@ -61,11 +61,9 @@ class Oggetto_News_Block_Category_List
 //        $this->getCategories()->addFieldToFilter('level', 1);
         if ($this->_getDisplayMode() == 0) {
             $pager = $this->getLayout()->createBlock('page/html_pager', 'oggetto_news.categories.html.pager');
-//                ->setCollection($this->getCategories());
             $pager->setAvailableLimit(array(10 => 10));
             $pager->setCollection($this->getCategories());
             $this->setChild('pager', $pager);
-//            $this->getCategories()->load();
         }
         return $this;
     }
@@ -81,13 +79,23 @@ class Oggetto_News_Block_Category_List
     }
 
     /**
+     * Get the tree html
+     *
+     * @return string
+     */
+    public function getTreeHtml()
+    {
+        return $this->getChildHtml('category_tree');
+    }
+
+    /**
      * Get the display mode
      *
      * @return int
      */
     protected function _getDisplayMode()
     {
-        return Mage::getStoreConfigFlag('oggetto_news/category/tree');
+        return Mage::helper('oggetto_news/data')->getCategoryTreeFlag();
     }
 
     /**
@@ -101,42 +109,32 @@ class Oggetto_News_Block_Category_List
     public function drawCategory($category, $level = 0)
     {
         $html = '';
-        $recursion = $this->getRecursion();
-        if ($recursion !== '0' && $level >= $recursion) {
-            return '';
-        }
-//        $storeIds = Mage::getResourceSingleton('oggetto_news/category')->lookupStoreIds($category->getId());
-//        $validStoreIds = array(0, Mage::app()->getStore()->getId());
-//        if (!array_intersect($storeIds, $validStoreIds)){
-//            return '';
-//        }
-        if (!$category->getStatus()) {
-            return '';
-        }
-        $children = $category->getChildrenCategories();
-        $activeChildren = array();
-        if ($recursion == 0 || $level < $recursion - 1) {
-            foreach ($children as $child) {
-//                $childStoreIds = Mage::getResourceSingleton('oggetto_news/category')->lookupStoreIds($child->getId());
-//                $validStoreIds = array(0, Mage::app()->getStore()->getId());
-//                if (!array_intersect($childStoreIds, $validStoreIds)){
-//                    continue;
-//                }
-                if ($child->getStatus()) {
-                    $activeChildren[] = $child;
+        $categories = $category->getChildSubTree()->getItems();
+        $startLevel = $category->getLevel() + 1;
+        $keys = array_keys($categories);
+
+        for ($i = 0; $i < count($keys); $i++) {
+            $category = $categories[$keys[$i]];
+            $nextCategory = $categories[$keys[$i + 1]];
+
+            $html .= '<li>';
+            $html .= '<a href="' . $category->getCategoryUrl() . '">' . $category->getName() . '</a>';
+            if ($nextCategory && $nextCategory->getLevel() > $category->getLevel()) {
+                $html .= '<ul>';
+            } else {
+                $html .= '</li>';
+
+                if ($nextCategory) {
+                    $lowLevel = $nextCategory->getLevel();
+                } else {
+                    $lowLevel = $startLevel;
+                }
+                for ($j = 0; $j < $category->getLevel() - $lowLevel; $j++) {
+                    $html .= '</ul></li>';
                 }
             }
         }
-        $html .= '<li>';
-        $html .= '<a href="' . $category->getCategoryUrl() . '">' . $category->getName() . '</a>';
-        if (count($activeChildren) > 0) {
-            $html .= '<ul>';
-            foreach ($children as $child) {
-                $html .= $this->drawCategory($child, $level + 1);
-            }
-            $html .= '</ul>';
-        }
-        $html .= '</li>';
+
         return $html;
     }
 
@@ -148,7 +146,7 @@ class Oggetto_News_Block_Category_List
     public function getRecursion()
     {
         if (!$this->hasData('recursion')) {
-            $this->setData('recursion', Mage::getStoreConfig('oggetto_news/category/recursion'));
+            $this->setData('recursion', Mage::helper('oggetto_news/data')->getCategoryRecursion());
         }
         return $this->getData('recursion');
     }

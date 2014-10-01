@@ -75,7 +75,7 @@ class Oggetto_News_Block_Adminhtml_Category_Abstract
         if ($this->getCategory()) {
             return $this->getCategory()->getPath();
         }
-        return Mage::helper('oggetto_news/category')->getRootCategoryId();
+        return Mage::helper('oggetto_news/data')->getRootCategoryId();
     }
 
     /**
@@ -106,7 +106,7 @@ class Oggetto_News_Block_Adminhtml_Category_Abstract
         }
         $root = Mage::registry('root');
         if (is_null($root)) {
-            $rootId = Mage::helper('oggetto_news/category')->getRootCategoryId();
+            $rootId = Mage::helper('oggetto_news/data')->getRootCategoryId();
             $tree = Mage::getResourceSingleton('oggetto_news/category_tree')
                 ->load(null, $recursionLevel);
             if ($this->getCategory()) {
@@ -114,9 +114,9 @@ class Oggetto_News_Block_Adminhtml_Category_Abstract
             }
             $tree->addCollectionData($this->getCategoryCollection());
             $root = $tree->getNodeById($rootId);
-            if ($root && $rootId != Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+            if ($root && $rootId != Mage::helper('oggetto_news/data')->getRootCategoryId()) {
                 $root->setIsVisible(true);
-            } elseif ($root && $root->getId() == Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+            } elseif ($root && $root->getId() == Mage::helper('oggetto_news/data')->getRootCategoryId()) {
                 $root->setName(Mage::helper('oggetto_news')->__('Root'));
             }
             Mage::register('root', $root);
@@ -137,11 +137,11 @@ class Oggetto_News_Block_Adminhtml_Category_Abstract
             $categoryTreeResource = Mage::getResourceSingleton('oggetto_news/category_tree');
             $ids = $categoryTreeResource->getExistingCategoryIdsBySpecifiedIds($ids);
             $tree = $categoryTreeResource->loadByIds($ids);
-            $rootId = Mage::helper('oggetto_news/category')->getRootCategoryId();
+            $rootId = Mage::helper('oggetto_news/data')->getRootCategoryId();
             $root = $tree->getNodeById($rootId);
-            if ($root && $rootId != Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+            if ($root && $rootId != Mage::helper('oggetto_news/data')->getRootCategoryId()) {
                 $root->setIsVisible(true);
-            } else if ($root && $root->getId() == Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+            } else if ($root && $root->getId() == Mage::helper('oggetto_news/data')->getRootCategoryId()) {
                 $root->setName(Mage::helper('oggetto_news')->__('Root'));
             }
             $tree->addCollectionData($this->getCategoryCollection());
@@ -165,9 +165,9 @@ class Oggetto_News_Block_Adminhtml_Category_Abstract
         $parentId = $parentNodeCategory->getParentId();
         $node = $tree->loadNode($nodeId);
         $node->loadChildren($recursionLevel);
-        if ($node && $nodeId != Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+        if ($node && $nodeId != Mage::helper('oggetto_news/data')->getRootCategoryId()) {
             $node->setIsVisible(true);
-        } elseif ($node && $node->getId() == Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+        } elseif ($node && $node->getId() == Mage::helper('oggetto_news/data')->getRootCategoryId()) {
             $node->setName(Mage::helper('oggetto_news')->__('Root'));
         }
         $tree->addCollectionData($this->getCategoryCollection());
@@ -204,6 +204,6 @@ class Oggetto_News_Block_Adminhtml_Category_Abstract
      */
     public function getRootIds()
     {
-        return array(Mage::helper('oggetto_news/category')->getRootCategoryId());
+        return array(Mage::helper('oggetto_news/data')->getRootCategoryId());
     }
 }

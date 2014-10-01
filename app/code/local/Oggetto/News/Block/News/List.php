@@ -55,7 +55,6 @@ class Oggetto_News_Block_News_List
         parent::_prepareLayout();
 
         $pager = $this->getLayout()->createBlock('page/html_pager', 'oggetto_news.news.html.pager');
-//            ->setCollection($this->getNews());
         $pager->setAvailableLimit(array(10 => 10));
         $pager->setCollection($this->getNews());
         $this->setChild('pager', $pager);

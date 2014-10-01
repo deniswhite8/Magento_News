@@ -29,7 +29,7 @@
  * @package     Oggetto_News
  */
 class Oggetto_News_Adminhtml_News_NewsController
-    extends Oggetto_News_Controller_Adminhtml_News
+    extends Mage_Adminhtml_Controller_Action
 {
 
     /**
@@ -265,42 +265,6 @@ class Oggetto_News_Adminhtml_News_NewsController
             $this->getLayout()->createBlock('oggetto_news/adminhtml_news_edit_tab_category')
                 ->getCategoryChildrenJson($this->getRequest()->getParam('category'))
         );
-    }
-
-    /**
-     * Export as csv - action
-     *
-     * @return void
-     */
-    public function exportCsvAction()
-    {
-        $fileName = 'news.csv';
-        $content = $this->getLayout()->createBlock('oggetto_news/adminhtml_news_grid')->getCsv();
-        $this->_prepareDownloadResponse($fileName, $content);
-    }
-
-    /**
-     * Export as MsExcel - action
-     *
-     * @return void
-     */
-    public function exportExcelAction()
-    {
-        $fileName = 'news.xls';
-        $content = $this->getLayout()->createBlock('oggetto_news/adminhtml_news_grid')->getExcelFile();
-        $this->_prepareDownloadResponse($fileName, $content);
-    }
-
-    /**
-     * Export as xml - action
-     *
-     * @return void
-     */
-    public function exportXmlAction()
-    {
-        $fileName = 'news.xml';
-        $content = $this->getLayout()->createBlock('oggetto_news/adminhtml_news_grid')->getXml();
-        $this->_prepareDownloadResponse($fileName, $content);
     }
 
     /**

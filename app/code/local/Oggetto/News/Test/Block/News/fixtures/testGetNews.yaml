@@ -1,0 +1,16 @@
+tables:
+  oggetto_news/news:
+    - entity_id: 1
+      name: disable
+      url_key: dis
+      status: 0
+
+    - entity_id: 2
+      name: zxc
+      url_key: zxc
+      status: 1
+
+    - entity_id: 3
+      name: ab
+      url_key: ab
+      status: 1

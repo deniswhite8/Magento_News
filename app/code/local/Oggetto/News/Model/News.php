@@ -86,59 +86,34 @@ class Oggetto_News_Model_News
      */
     public function getNewsUrl()
     {
-//        if ($this->getUrlKey()) {
-//            $urlKey = '';
-//            if ($prefix = Mage::getStoreConfig('oggetto_news/news/url_prefix')) {
-//                $urlKey .= $prefix . '/';
-//            }
-//            $urlKey .= $this->getUrlKey();
-//            if ($suffix = Mage::getStoreConfig('oggetto_news/news/url_suffix')) {
-//                $urlKey .= '.' . $suffix;
-//            }
-//            return Mage::getUrl('news/' . $urlKey);
-//        }
-//        return Mage::getUrl('oggetto_news/news/view', array('id' => $this->getId()));
-
-        return Mage::getUrl('oggetto_news') . $this->getUrlPath();
+        if ($urlKey = $this->getUrlKey()) {
+            $dataHelper = Mage::helper('oggetto_news/data');
+            $urlKey = $dataHelper->getNewsUrlPrefix() . $urlKey . $dataHelper->getNewsUrlSuffix();
+            return Mage::getModel('core/url')->getDirectUrl($urlKey);
+        }
+        return Mage::getUrl('oggetto_news/news/view', array('id' => $this->getId()));
     }
 
     /**
      * Check URL key
      *
      * @param string $urlKey Url key
-     * @param bool $active Active
-     *
      * @return mixed
      */
-    public function checkUrlKey($urlKey, $active = true)
+    public function getIdByUrlKey($urlKey)
     {
-        return $this->_getResource()->checkUrlKey($urlKey, $active);
+        return $this->_getResource()->getIdByUrlKey($urlKey);
     }
 
     /**
      * Check URL path
      *
      * @param string $urlPath Url path
-     * @param bool $active Active
-     *
      * @return mixed
      */
-    public function checkUrlPath($urlPath, $active = true)
+    public function getIdByUrlPath($urlPath)
     {
-        return $this->_getResource()->checkUrlPath($urlPath, $active);
-    }
-
-    /**
-     * Get URL path
-     *
-     * @param string $urlPath Url path
-     * @param bool $active Active
-     *
-     * @return mixed
-     */
-    public function getUrlPath($active = true)
-    {
-        return $this->_getResource()->getFirstUrlPath($this->getId());
+        return $this->_getResource()->getIdByUrlPath($urlPath);
     }
 
     /**
@@ -199,7 +174,7 @@ class Oggetto_News_Model_News
     /**
      * Retrieve collection selected categories
      *
-     * @return Oggetto_News_Model_News_Category_Collection
+     * @return Oggetto_News_Model_Resource_News_Category_Collection
      */
     public function getSelectedCategoriesCollection()
     {
@@ -214,8 +189,10 @@ class Oggetto_News_Model_News
      */
     public function getDefaultValues()
     {
-        $values = array();
-        $values['status'] = 1;
+        $values = array(
+            'status' => 1
+        );
+
         return $values;
     }
 }

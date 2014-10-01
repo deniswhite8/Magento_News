@@ -29,7 +29,7 @@
  * @package     Oggetto_News
  */
 class Oggetto_News_Adminhtml_News_CategoryController
-    extends Oggetto_News_Controller_Adminhtml_News
+    extends Mage_Adminhtml_Controller_Action
 {
 
     /**
@@ -289,7 +289,7 @@ class Oggetto_News_Adminhtml_News_CategoryController
             if (!$category->getId()) {
                 $parentId = $this->getRequest()->getParam('parent');
                 if (!$parentId) {
-                    $parentId = Mage::helper('oggetto_news/category')->getRootCategoryId();
+                    $parentId = Mage::helper('oggetto_news/data')->getRootCategoryId();
                 }
                 $parentCategory = Mage::getModel('oggetto_news/category')->load($parentId);
                 $category->setPath($parentCategory->getPath());

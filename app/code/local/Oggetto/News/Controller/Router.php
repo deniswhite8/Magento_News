@@ -45,6 +45,67 @@ class Oggetto_News_Controller_Router
         return $this;
     }
 
+
+
+
+    /**
+     * Prepare url
+     *
+     * @param string $url  Url
+     * @param string $type Model type
+     *
+     * @return string
+     */
+    private function _prepareUrl($url, $type)
+    {
+        $helper = Mage::helper('oggetto_news/data');
+        $fullUrlPath = trim($url, '/');
+
+        $urlPrefix = $helper->getUrlPrefix($type);
+        $urlSuffix = $helper->getUrlSuffix($type);
+
+        $prefixCount = 0;
+        $suffixCount = 0;
+
+        $urlPath = preg_replace('/^'. preg_quote($urlPrefix, '/') . '/', '', $fullUrlPath, 1, $prefixCount);
+        $urlPath = preg_replace('/'. preg_quote($urlSuffix, '/') . '$/', '', $urlPath, 1, $suffixCount);
+
+        if ($prefixCount == 1 && $suffixCount == 1) {
+            return $urlPath;
+        }
+
+        return null;
+    }
+
+    /**
+     * Check for main list
+     *
+     * @param Zend_Controller_Request_Http $request     Request
+     * @param string                       $url         Url
+     * @param string                       $type        Model type
+     *
+     * @return bool
+     */
+    private function _checkForMainList($request, $url, $type)
+    {
+        $fullUrlPath = trim($url, '/');
+
+        if ($fullUrlPath == trim(Mage::helper('oggetto_news/data')->getUrlRewriteList($type), '/')) {
+            $request->setModuleName('news')
+                ->setControllerName($type)
+                ->setActionName('index');
+
+            $request->setAlias(
+                Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS,
+                $url
+            );
+
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Validate and match entities and modify request
      *
@@ -60,47 +121,65 @@ class Oggetto_News_Controller_Router
             exit;
         }
 
-        $fullUrlPath = trim($request->getPathInfo(), '/');
-        $fullUrlPathArray = explode('/', $fullUrlPath);
-        $firstWord = array_shift($fullUrlPathArray);
-        $urlPath = implode('/', $fullUrlPathArray);
+        $fullUrl = $request->getPathInfo();
 
-        if ($firstWord != 'news') {
+        if ($this->_checkForMainList($request, $fullUrl, 'news') ||
+            $this->_checkForMainList($request, $fullUrl, 'category')) {
+
+            return true;
+        }
+
+        $newsUrlPath = $this->_prepareUrl($fullUrl, 'news');
+        $categoryUrlPath = $this->_prepareUrl($fullUrl, 'category');
+
+        if (!$newsUrlPath && !$categoryUrlPath) {
             return false;
         }
 
         $newsModel = Mage::getModel('oggetto_news/news');
         $categoryModel = Mage::getModel('oggetto_news/category');
 
-        $newsId = $newsModel->checkUrlPath($urlPath, Mage::app()->getStore()->getId());
-        $categoryId = $categoryModel->checkUrlPath($urlPath, Mage::app()->getStore()->getId());
+        $possibleСases = array(
+            array('news' => $newsModel->getIdByUrlPath($newsUrlPath)),
+            array('news' => $newsModel->getIdByUrlKey($newsUrlPath)),
+            array('category' => $categoryModel->getIdByUrlPath($categoryUrlPath)),
+        );
 
-        $result = false;
-        if ($categoryId) {
-            if (!$categoryModel->load($categoryId)->getStatusPath()) {
-                return false;
+        foreach ($possibleСases as $case) {
+            if ($this->_processCase($request, key($case), reset($case), $fullUrl)) {
+                return true;
             }
-            $request->setModuleName('news')
-                ->setControllerName('category')
-                ->setActionName('view')
-                ->setParam('id', $categoryId);
-            $request->setAlias(
-                Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS,
-                $fullUrlPath
-            );
-            $result = true;
-        } else if ($newsId) {
-            $request->setModuleName('news')
-                ->setControllerName('news')
-                ->setActionName('view')
-                ->setParam('id', $newsId);
-            $request->setAlias(
-                Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS,
-                $fullUrlPath
-            );
-            $result = true;
         }
 
-        return $result;
+        return false;
+    }
+
+    /**
+     * Check case
+     *
+     * @param Zend_Controller_Request_Http $request     Request
+     * @param string                       $type        Model type
+     * @param string                       $id          Model id
+     * @param string                       $fullUrlPath Full URL path
+     *
+     * @return bool
+     */
+    private function _processCase($request, $type, $id, $fullUrlPath)
+    {
+        if (!$id) {
+            return false;
+        }
+
+        $request->setModuleName('news')
+                ->setControllerName($type)
+                ->setActionName('view')
+                ->setParam('id', $id);
+
+        $request->setAlias(
+            Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS,
+            $fullUrlPath
+        );
+
+        return true;
     }
 }

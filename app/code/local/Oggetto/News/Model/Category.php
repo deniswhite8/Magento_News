@@ -87,7 +87,9 @@ class Oggetto_News_Model_Category
     public function getCategoryUrl()
     {
         if ($urlPath = $this->getUrlPath()) {
-            return Mage::getUrl('news/' . $urlPath);
+            $dataHelper = Mage::helper('oggetto_news/data');
+            $urlKey = $dataHelper->getCategoryUrlPrefix() . $urlPath . $dataHelper->getCategoryUrlSuffix();
+            return Mage::getModel('core/url')->getDirectUrl($urlKey);
         }
         return Mage::getUrl('oggetto_news/category/view', array('id' => $this->getId()));
     }
@@ -96,13 +98,11 @@ class Oggetto_News_Model_Category
      * Check URL key
      *
      * @param string $urlPath Url path
-     * @param bool $active Active
-     *
      * @return mixed
      */
-    public function checkUrlPath($urlPath, $active = true)
+    public function getIdByUrlPath($urlPath)
     {
-        return $this->_getResource()->checkUrlPath($urlPath, $active);
+        return $this->_getResource()->getIdByUrlPath($urlPath);
     }
 
     /**
@@ -149,7 +149,7 @@ class Oggetto_News_Model_Category
     /**
      * Retrieve collection selected news
      *
-     * @return Oggetto_News_Model_Category_News_Collection
+     * @return Oggetto_News_Model_Resource_Category_News_Collection
      */
     public function getSelectedNewsCollection()
     {
@@ -183,7 +183,7 @@ class Oggetto_News_Model_Category
     /**
      * Move news category
      *
-     * @param   int $parentId New parent news category id
+     * @param   int $parentId        New parent news category id
      * @param   int $afterCategoryId News category id after which we have put current news category
      *
      * @return  Oggetto_News_Model_Category
@@ -294,16 +294,6 @@ class Oggetto_News_Model_Category
     }
 
     /**
-     * Check the id
-     *
-     * @return bool
-     */
-    public function checkId($id)
-    {
-        return $this->_getResource()->checkId($id);
-    }
-
-    /**
      * Get array news categories ids which are part of news category path
      *
      * @return array
@@ -329,17 +319,6 @@ class Oggetto_News_Model_Category
             return count(explode('/', $this->getPath())) - 1;
         }
         return $this->getData('level');
-    }
-
-    /**
-     * Verify news category ids
-     *
-     * @param array $ids Ids
-     * @return bool
-     */
-    public function verifyIds(array $ids)
-    {
-        return $this->getResource()->verifyIds($ids);
     }
 
     /**
@@ -402,14 +381,30 @@ class Oggetto_News_Model_Category
     }
 
     /**
+     * Get child sub tree
+     *
+     * @return Oggetto_News_Model_Resource_Category_Collection
+     */
+    public function getChildSubTree()
+    {
+        return $this->getResource()->getChildSubTree($this);
+    }
+
+    /**
      * Check if parents are enabled
      *
      * @return bool
      */
     public function getStatusPath()
     {
+        $selfStatus = $this->getStatus();
+
+        if (!$selfStatus) {
+            return false;
+        }
+
         $parents = $this->getParentCategories();
-        $rootId = Mage::helper('oggetto_news/category')->getRootCategoryId();
+        $rootId = Mage::helper('oggetto_news/data')->getRootCategoryId();
         foreach ($parents as $parent) {
             if ($parent->getId() == $rootId) {
                 continue;
@@ -418,7 +413,7 @@ class Oggetto_News_Model_Category
                 return false;
             }
         }
-        return $this->getStatus();
+        return $selfStatus;
     }
 
     /**

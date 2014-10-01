@@ -23,50 +23,30 @@
  */
 
 /**
- * News category helper
+ * News category list block test
  *
  * @category    Oggetto
  * @package     Oggetto_News
  */
-class Oggetto_News_Helper_Category
-    extends Mage_Core_Helper_Abstract
+class Oggetto_News_Test_Block_News_Category_List
+    extends EcomDev_PHPUnit_Test_Case_Controller
 {
 
     /**
-     * @var int CATEGORY_ROOT_ID Root category id
-     */
-    const CATEGORY_ROOT_ID = 1;
-
-    /**
-     * Get the url to the news categories list page
+     * Test get the current news
      *
-     * @return string
+     * @return Oggetto_News_Model_News|null
      */
-    public function getCategoriesUrl()
+    public function testGetCurrentNews()
     {
-        if ($listKey = Mage::getStoreConfig('oggetto_news/category/url_rewrite_list')) {
-            return Mage::getUrl('', array('_direct' => $listKey));
-        }
-        return Mage::getUrl('oggetto_news/category/index');
-    }
+        $news = Mage::getModel('oggetto_news/news');
 
-    /**
-     * Check if breadcrumbs can be used
-     *
-     * @return bool
-     */
-    public function getUseBreadcrumbs()
-    {
-        return Mage::getStoreConfigFlag('oggetto_news/category/breadcrumbs');
-    }
+        Mage::unregister('current_news');
 
-    /**
-     * Get the root id
-     *
-     * @return int
-     */
-    public function getRootCategoryId()
-    {
-        return self::CATEGORY_ROOT_ID;
+        $block = new Oggetto_News_Block_News_Category_List();
+
+        Mage::register('current_news', $news);
+
+        $this->assertEquals($news, $block->getNews());
     }
 }

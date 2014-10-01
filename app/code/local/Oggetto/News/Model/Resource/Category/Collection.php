@@ -171,7 +171,7 @@ class Oggetto_News_Model_Resource_Category_Collection
         $additional['label'] = $labelField;
 
         foreach ($this as $item) {
-            if ($item->getId() == Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+            if ($item->getId() == Mage::helper('oggetto_news/data')->getRootCategoryId()) {
                 continue;
             }
             foreach ($additional as $code => $field) {
@@ -194,7 +194,7 @@ class Oggetto_News_Model_Resource_Category_Collection
     {
         $res = array();
         foreach ($this as $item) {
-            if ($item->getId() == Mage::helper('oggetto_news/category')->getRootCategoryId()) {
+            if ($item->getId() == Mage::helper('oggetto_news/data')->getRootCategoryId()) {
                 continue;
             }
             $res[$item->getData($valueField)] = $item->getData($labelField);

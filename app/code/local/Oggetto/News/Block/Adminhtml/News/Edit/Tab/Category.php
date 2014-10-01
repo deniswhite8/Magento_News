@@ -111,7 +111,7 @@ class Oggetto_News_Block_Adminhtml_News_Edit_Tab_Category extends Oggetto_News_B
         }
         $root = Mage::registry('category_root');
         if (is_null($root)) {
-            $rootId = Mage::helper('oggetto_news/category')->getRootCategoryId();
+            $rootId = Mage::helper('oggetto_news/data')->getRootCategoryId();
             $ids = $this->getSelectedCategoryPathIds($rootId);
             $tree = Mage::getResourceSingleton('oggetto_news/category_tree')
                 ->loadByIds($ids, false, false);
@@ -190,7 +190,7 @@ class Oggetto_News_Block_Adminhtml_News_Edit_Tab_Category extends Oggetto_News_B
     }
 
     /**
-     * Returns JSON-encoded array of  children
+     * Returns JSON-encoded array of children
      *
      * @param int $categoryId Category Id
      * @return string

@@ -45,8 +45,8 @@ class Oggetto_News_Model_Resource_News_Category
     /**
      * Save news - category relations
      *
-     * @param Oggetto_News_Model_News $news News
-     * @param array $data Data
+     * @param Oggetto_News_Model_News $news        News
+     * @param array                   $categoryIds Data
      *
      * @return Oggetto_News_Model_Resource_News_Category
      */
