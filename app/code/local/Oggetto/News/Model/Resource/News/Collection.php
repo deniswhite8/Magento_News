@@ -47,6 +47,24 @@ class Oggetto_News_Model_Resource_News_Collection
     }
 
     /**
+     * Add is(s) filter
+     *
+     * @param int|array $id News id(s)
+     * @return Oggetto_News_Model_Resource_News_Collection
+     */
+    public function addIdFilter($id)
+    {
+        $idFieldName = $this->getResource()->getIdFieldName();
+
+        $filter = $id;
+        if (is_array($id)) {
+            $filter = ['in', $id];
+        }
+
+        $this->addFieldToFilter($idFieldName, $filter);
+    }
+
+    /**
      * Get news as array
      *
      * @param string $valueField Value field

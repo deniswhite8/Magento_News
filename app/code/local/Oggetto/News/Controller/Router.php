@@ -129,21 +129,30 @@ class Oggetto_News_Controller_Router
             return true;
         }
 
-        $newsUrlPath = $this->_prepareUrl($fullUrl, 'news');
-        $categoryUrlPath = $this->_prepareUrl($fullUrl, 'category');
+        $indexerModel = Mage::getModel('oggetto_news/indexer_relation');
+        if ($indexerModel->indexIsAvailable()) {
+            $possibleСases = array(
+                array('news' => $indexerModel->getNewsIdByPathFromIndex($fullUrl)),
+                array('category' => $indexerModel->getCategoryIdByPathFromIndex($fullUrl)),
+            );
+        } else {
+            $newsUrlPath = $this->_prepareUrl($fullUrl, 'news');
+            $categoryUrlPath = $this->_prepareUrl($fullUrl, 'category');
 
-        if (!$newsUrlPath && !$categoryUrlPath) {
-            return false;
+            if (!$newsUrlPath && !$categoryUrlPath) {
+                return false;
+            }
+
+            $newsModel = Mage::getModel('oggetto_news/news');
+            $categoryModel = Mage::getModel('oggetto_news/category');
+
+            $possibleСases = array(
+                array('news' => $newsModel->getIdByUrlPath($newsUrlPath)),
+                array('news' => $newsModel->getIdByUrlKey($newsUrlPath)),
+                array('category' => $categoryModel->getIdByUrlPath($categoryUrlPath)),
+            );
         }
 
-        $newsModel = Mage::getModel('oggetto_news/news');
-        $categoryModel = Mage::getModel('oggetto_news/category');
-
-        $possibleСases = array(
-            array('news' => $newsModel->getIdByUrlPath($newsUrlPath)),
-            array('news' => $newsModel->getIdByUrlKey($newsUrlPath)),
-            array('category' => $categoryModel->getIdByUrlPath($categoryUrlPath)),
-        );
 
         foreach ($possibleСases as $case) {
             if ($this->_processCase($request, key($case), reset($case), $fullUrl)) {

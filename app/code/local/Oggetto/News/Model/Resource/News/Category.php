@@ -37,7 +37,7 @@ class Oggetto_News_Model_Resource_News_Category
      *
      * @return Oggetto_News_Model_Resource_News_Category
      */
-    protected function  _construct()
+    protected function _construct()
     {
         $this->_init('oggetto_news/news_category', 'rel_id');
     }

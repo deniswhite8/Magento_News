@@ -21,7 +21,7 @@
  * @copyright Copyright (C) 2014, Oggetto Web (http://oggettoweb.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-/*
+/**
 * @category    Oggetto
 * @package     Oggetto_News
 */

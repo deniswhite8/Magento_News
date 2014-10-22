@@ -26,10 +26,17 @@
 <config>
     <modules>
         <Oggetto_News>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
         </Oggetto_News>
     </modules>
     <global>
+        <index>
+            <indexer>
+                <oggetto_news>
+                    <model>oggetto_news/indexer_relation</model>
+                </oggetto_news>
+            </indexer>
+        </index>
         <resources>
             <oggetto_news_setup>
                 <setup>
@@ -68,6 +75,9 @@
                     <category_news>
                         <table>oggetto_news_news_category</table>
                     </category_news>
+                    <indexer_relation>
+                        <table>oggetto_news_indexer_relation</table>
+                    </indexer_relation>
                 </entities>
             </oggetto_news_resource>
         </models>

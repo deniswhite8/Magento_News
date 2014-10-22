@@ -31,7 +31,6 @@
 class Oggetto_News_Model_Category_News
     extends Mage_Core_Model_Abstract
 {
-
     /**
      * Initialize resource
      *

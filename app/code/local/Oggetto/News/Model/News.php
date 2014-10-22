@@ -95,6 +95,21 @@ class Oggetto_News_Model_News
     }
 
     /**
+     * Get the special url to the news details page
+     *
+     * @return string
+     */
+    public function getSpecialNewsUrl()
+    {
+        if ($urlKey = $this->getUrlKey()) {
+            $dataHelper = Mage::helper('oggetto_news/data');
+            $urlKey = $dataHelper->getNewsUrlPrefix() . $urlKey . $dataHelper->getNewsUrlSuffix();
+            return $urlKey;
+        }
+        return null;
+    }
+
+    /**
      * Check URL key
      *
      * @param string $urlKey Url key
@@ -138,6 +153,11 @@ class Oggetto_News_Model_News
     protected function _afterSave()
     {
         $this->getCategoryInstance()->saveNewsRelation($this);
+
+        Mage::getSingleton('index/indexer')->processEntityAction(
+            $this, self::ENTITY, Mage_Index_Model_Event::TYPE_SAVE
+        );
+
         return parent::_afterSave();
     }
 

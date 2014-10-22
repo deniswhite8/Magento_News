@@ -94,6 +94,23 @@ class Oggetto_News_Model_Category
         return Mage::getUrl('oggetto_news/category/view', array('id' => $this->getId()));
     }
 
+
+    /**
+     * Get the special url to the news category details page
+     *
+     * @return string
+     */
+    public function getSpecialCategoryUrl()
+    {
+        if ($urlPath = $this->getUrlPath()) {
+            $dataHelper = Mage::helper('oggetto_news/data');
+            $urlKey = $dataHelper->getCategoryUrlPrefix() . $urlPath . $dataHelper->getCategoryUrlSuffix();
+            return $urlKey;
+        }
+        return null;
+    }
+
+
     /**
      * Check URL key
      *
@@ -113,6 +130,11 @@ class Oggetto_News_Model_Category
     protected function _afterSave()
     {
         $this->getNewsInstance()->saveCategoryRelation($this);
+
+        Mage::getSingleton('index/indexer')->processEntityAction(
+            $this, self::ENTITY, Mage_Index_Model_Event::TYPE_SAVE
+        );
+
         return parent::_afterSave();
     }
 
