@@ -119,7 +119,7 @@ class Oggetto_News_Model_Indexer_Relation
     {
         return Mage::getModel('index/indexer')
             ->getProcessByCode('oggetto_news')
-            ->getStatus() != Mage_Index_Model_Process::STATUS_RUNNING;
+            ->getStatus() == Mage_Index_Model_Process::STATUS_PENDING;
     }
 
 
