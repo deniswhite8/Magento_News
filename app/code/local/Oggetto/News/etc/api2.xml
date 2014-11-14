@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Oggetto Web extension for Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade
+ * the Oggetto News module to newer versions in the future.
+ * If you wish to customize the Oggetto News module for your needs
+ * please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category   Oggetto
+ * @package    Oggetto_News
+ * @copyright  Copyright (C) 2013 Oggetto Web (http://oggettoweb.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <api2>
+        <resource_groups>
+            <catalog translate="title" module="api2">
+                <title>Catalog</title>
+                <sort_order>30</sort_order>
+                <children>
+                    <news translate="title" module="api2">
+                        <title>News</title>
+                        <sort_order>50</sort_order>
+                    </news>
+                </children>
+            </catalog>
+        </resource_groups>
+        <resources>
+            <news translate="title" module="oggetto_news">
+                <group>news</group>
+                <model>oggetto_news/api2_news</model>
+                <title>News (Post)</title>
+                <sort_order>1</sort_order>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                        <read>1</read>
+                        <create>1</create>
+                        <update>1</update>
+                        <delete>1</delete>
+                    </admin>
+                    <customer>
+                        <retrieve>1</retrieve>
+                        <read>1</read>
+                    </customer>
+                    <guest>
+                        <retrieve>1</retrieve>
+                        <read>1</read>
+                    </guest>
+                </privileges>
+                <attributes translate="entity_id" module="oggetto_news">
+                    <entity_id>News ID</entity_id>
+                    <name>News name</name>
+                    <text>News text</text>
+                    <created_at>Created at</created_at>
+                    <category_ids>Category ids</category_ids>
+                    <status>Status</status>
+                </attributes>
+                <routes>
+                    <route_entity>
+                        <route>/news/:entity_id</route>
+                        <action_type>entity</action_type>
+                    </route_entity>
+                    <route_colletion>
+                        <route>/news</route>
+                        <action_type>collection</action_type>
+                    </route_colletion>
+                </routes>
+                <versions>1</versions>
+            </news>
+            <news_category translate="title" module="oggetto_news">
+                <group>news</group>
+                <model>oggetto_news/api2_category</model>
+                <title>Category</title>
+                <sort_order>1</sort_order>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                        <read>1</read>
+                    </admin>
+                    <customer>
+                        <retrieve>1</retrieve>
+                        <read>1</read>
+                    </customer>
+                    <guest>
+                        <retrieve>1</retrieve>
+                        <read>1</read>
+                    </guest>
+                </privileges>
+                <attributes translate="entity_id" module="oggetto_news">
+                    <entity_id>Category ID</entity_id>
+                    <name>Category name</name>
+                    <parent_id>Category parent ID</parent_id>
+                </attributes>
+                <routes>
+                    <route_entity>
+                        <route>/news_category/:entity_id</route>
+                        <action_type>entity</action_type>
+                    </route_entity>
+                    <route_colletion>
+                        <route>/news_category</route>
+                        <action_type>collection</action_type>
+                    </route_colletion>
+                </routes>
+                <versions>1</versions>
+            </news_category>
+        </resources>
+    </api2>
+</config>

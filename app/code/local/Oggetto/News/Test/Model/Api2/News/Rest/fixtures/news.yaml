@@ -1,0 +1,40 @@
+tables:
+  oggetto_news/news:
+    - entity_id: 1
+    - entity_id: 2
+    - entity_id: 3
+    - entity_id: 4
+    - entity_id: 5
+    - entity_id: 6
+    - entity_id: 7
+    - entity_id: 8
+    - entity_id: 9
+    - entity_id: 10
+
+  oggetto_news/category:
+    - entity_id: 1
+    - entity_id: 2
+
+  oggetto_news/news_category:
+    - news_id: 1
+      category_id: 1
+    - news_id: 2
+      category_id: 2
+    - news_id: 3
+      category_id: 1
+    - news_id: 4
+      category_id: 2
+    - news_id: 5
+      category_id: 1
+    - news_id: 6
+      category_id: 2
+    - news_id: 7
+      category_id: 1
+    - news_id: 7
+      category_id: 2
+    - news_id: 8
+      category_id: 2
+    - news_id: 9
+      category_id: 1
+    - news_id: 10
+      category_id: 2

@@ -1,0 +1,17 @@
+tables:
+  oggetto_news/news:
+    - entity_id: 7
+      name: Breaking news!
+      text: trololololo
+
+  oggetto_news/category:
+    - entity_id: 1
+    - entity_id: 2
+    - entity_id: 3
+    - entity_id: 4
+
+  oggetto_news/news_category:
+    - news_id: 7
+      category_id: 3
+    - news_id: 7
+      category_id: 4
