@@ -203,6 +203,16 @@ class Oggetto_News_Model_News
     }
 
     /**
+     * Get categories ids
+     *
+     * @return array
+     */
+    public function getCategoriesIds()
+    {
+        return $this->getCategoryInstance()->getCategoriesIdsByNews($this);
+    }
+
+    /**
      * Get default values
      *
      * @return array

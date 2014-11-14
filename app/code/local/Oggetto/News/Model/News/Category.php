@@ -68,4 +68,15 @@ class Oggetto_News_Model_News_Category
             ->addNewsFilter($news);
         return $collection;
     }
+
+    /**
+     * Get categories ids by news
+     *
+     * @param Oggetto_News_Model_News|int $news News
+     * @return array
+     */
+    public function getCategoriesIdsByNews($news)
+    {
+        return Mage::getResourceModel('oggetto_news/news_category_collection')->getCategoriesIdsByNews($news);
+    }
 }

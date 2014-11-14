@@ -57,6 +57,27 @@ class Oggetto_News_Model_Resource_News_Category_Collection
     }
 
     /**
+     * Get categories ids by news
+     *
+     * @param Oggetto_News_Model_News|int $news News
+     * @return array
+     */
+    public function getCategoriesIdsByNews($news)
+    {
+        if ($news instanceof Oggetto_News_Model_News) {
+            $news = $news->getId();
+        }
+
+        $readAdapter = Mage::getSingleton('core/resource')->getConnection('core_read');
+        $select = $readAdapter
+            ->select()
+            ->from($this->getTable('oggetto_news/news_category'), 'category_id')
+            ->where('news_id = ?', $news);
+
+        return $readAdapter->fetchAll($select);
+    }
+
+    /**
      * Add news filter
      *
      * @param Oggetto_News_Model_News | int $news News
